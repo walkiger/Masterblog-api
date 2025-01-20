@@ -7,7 +7,7 @@ window.onload = function() {
         document.getElementById('api-base-url').value = savedBaseUrl;
         loadPosts();
     }
-}
+};
 
 // Function to fetch all the posts from the API and display them on the page
 function loadPosts() {
@@ -27,8 +27,14 @@ function loadPosts() {
             data.forEach(post => {
                 const postDiv = document.createElement('div');
                 postDiv.className = 'post';
-                postDiv.innerHTML = `<h2>${post.title}</h2><p>${post.content}</p>
-                <button onclick="deletePost(${post.id})">Delete</button>`;
+                postDiv.innerHTML = `
+                    <h2>${post.title}</h2>
+                    <p>${post.content}</p>
+                    <input type="text" id="title-${post.id}" placeholder="New Title" value="${post.title}">
+                    <input type="text" id="content-${post.id}" placeholder="New Content" value="${post.content}">
+                    <button onclick="updatePost(${post.id})">Update</button>
+                    <button onclick="deletePost(${post.id})">Delete</button>
+                `;
                 postContainer.appendChild(postDiv);
             });
         })
@@ -52,6 +58,28 @@ function addPost() {
     .then(post => {
         console.log('Post added:', post);
         loadPosts(); // Reload the posts after adding a new one
+        document.getElementById('post-title').value = ''; // Clear the input fields
+        document.getElementById('post-content').value = ''; // Clear the input fields
+    })
+    .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
+}
+
+// Function to send a PUT request to the API to update a post
+function updatePost(postId) {
+    var baseUrl = document.getElementById('api-base-url').value;
+    var postTitle = document.getElementById(`title-${postId}`).value;
+    var postContent = document.getElementById(`content-${postId}`).value;
+
+    // Use the Fetch API to send a PUT request to the specific post's endpoint
+    fetch(baseUrl + '/posts/' + postId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: postTitle, content: postContent })
+    })
+    .then(response => response.json())  // Parse the JSON data from the response
+    .then(post => {
+        console.log('Post updated:', post);
+        loadPosts(); // Reload the posts after updating one
     })
     .catch(error => console.error('Error:', error));  // If an error occurs, log it to the console
 }

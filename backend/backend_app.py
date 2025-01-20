@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../frontend/static", template_folder="../frontend/templates")
 CORS(app)  # This will enable CORS for all routes
 
 POSTS = [
@@ -33,6 +33,20 @@ def add_post():
     return jsonify(new_post), 201
 
 
+@app.route('/api/posts/<int:id>', methods=['PUT'])
+def update_post(id):
+    data = request.get_json()
+
+    post = next((post for post in POSTS if post['id'] == id), None)
+    if post is None:
+        return jsonify({"error": "Post not found."}), 404
+
+    post['title'] = data.get('title', post['title'])
+    post['content'] = data.get('content', post['content'])
+
+    return jsonify(post), 200
+
+
 @app.route('/api/posts/<int:id>', methods=['DELETE'])
 def delete_post(id):
     post = next((post for post in POSTS if post['id'] == id), None)
@@ -45,7 +59,7 @@ def delete_post(id):
 
 @app.route('/')
 def home():
-    return 'Welcome to the Blog API. Use /api/posts to get the list of posts.'
+    return send_from_directory(app.template_folder, 'index.html')
 
 
 if __name__ == '__main__':
