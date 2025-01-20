@@ -1,5 +1,9 @@
 // Function that runs once the window is fully loaded
 window.onload = function() {
+    /**
+    * Loads the saved API base URL from local storage and sets it in the input field.
+    * Does not load posts automatically; allows user to load posts manually.
+    */
     // Attempt to retrieve the API base URL from the local storage
     var savedBaseUrl = localStorage.getItem('apiBaseUrl');
     // If a base URL is found in local storage, set it in the input field
@@ -10,11 +14,26 @@ window.onload = function() {
 
 // Function to fetch all the posts from the API and display them on the page
 function loadPosts() {
+    /**
+     * Fetch all the posts from the API and display them on the page.
+     * Optionally sort the posts based on the 'sort' and 'direction' query parameters.
+     */
     var baseUrl = document.getElementById('api-base-url').value;
     localStorage.setItem('apiBaseUrl', baseUrl);
 
-    // Use the Fetch API to send a GET request to the /posts endpoint
-    fetch(baseUrl + '/posts')
+    var sortField = document.getElementById('sort-field').value;
+    var sortDirection = document.getElementById('sort-direction').value;
+
+    var queryParams = '';
+    if (sortField) {
+        queryParams += `?sort=${encodeURIComponent(sortField)}`;
+    }
+    if (sortDirection) {
+        queryParams += queryParams ? `&direction=${encodeURIComponent(sortDirection)}` : `?direction=${encodeURIComponent(sortDirection)}`;
+    }
+
+    // Use the Fetch API to send a GET request to the /posts endpoint with sorting parameters
+    fetch(baseUrl + '/posts' + queryParams)
         .then(response => response.json())
         .then(data => {
             const postContainer = document.getElementById('post-container');
@@ -40,7 +59,11 @@ function loadPosts() {
 
 // Function to send a POST request to the API to add a new post
 function addPost() {
-    // Retrieve the values from the input fields
+    /**
+    * Sends a POST request to the API to add a new post.
+    * Retrieves the values from the input fields for title and content.
+    * Reloads the posts after adding a new one and clears the input fields.
+    */
     var baseUrl = document.getElementById('api-base-url').value;
     var postTitle = document.getElementById('post-title').value;
     var postContent = document.getElementById('post-content').value;
@@ -62,6 +85,12 @@ function addPost() {
 
 // Function to send a PUT request to the API to update a post
 function updatePost(postId) {
+    /**
+    * Sends a PUT request to the API to update an existing post.
+    * Retrieves the updated values from the input fields for title and content.
+    * Reloads the posts after updating one.
+    * @param {number} postId - The ID of the post to update.
+    */
     var baseUrl = document.getElementById('api-base-url').value;
     var postTitle = document.getElementById(`title-${postId}`).value;
     var postContent = document.getElementById(`content-${postId}`).value;
@@ -81,6 +110,11 @@ function updatePost(postId) {
 
 // Function to send a DELETE request to the API to delete a post
 function deletePost(postId) {
+    /**
+    * Sends a DELETE request to the API to delete an existing post.
+    * Reloads the posts after deleting one.
+    * @param {number} postId - The ID of the post to delete.
+    */
     var baseUrl = document.getElementById('api-base-url').value;
 
     // Use the Fetch API to send a DELETE request to the specific post's endpoint
@@ -95,6 +129,10 @@ function deletePost(postId) {
 
 // Function to send a GET request to the API to search for posts
 function searchPosts() {
+    /**
+    * Sends a GET request to the API to search for posts by title and/or content.
+    * Constructs the search query using the values from the input fields for title and content.
+    * Displays the search results on the page. */
     var baseUrl = document.getElementById('api-base-url').value;
     var searchTitle = document.getElementById('search-title').value;
     var searchContent = document.getElementById('search-content').value;
