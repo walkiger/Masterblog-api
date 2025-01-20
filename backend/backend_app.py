@@ -33,6 +33,16 @@ def add_post():
     return jsonify(new_post), 201
 
 
+@app.route('/api/posts/<int:id>', methods=['DELETE'])
+def delete_post(id):
+    post = next((post for post in POSTS if post['id'] == id), None)
+    if post is None:
+        return jsonify({"error": "Post not found."}), 404
+
+    POSTS.remove(post)
+    return jsonify({"message": f"Post with id {id} has been deleted successfully."}), 200
+
+
 @app.route('/')
 def home():
     return 'Welcome to the Blog API. Use /api/posts to get the list of posts.'
