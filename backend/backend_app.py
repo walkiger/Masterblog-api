@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-app = Flask(__name__, static_folder="../frontend/static", template_folder="../frontend/templates")
+app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
 
 POSTS = [
@@ -57,9 +57,18 @@ def delete_post(id):
     return jsonify({"message": f"Post with id {id} has been deleted successfully."}), 200
 
 
-@app.route('/')
-def home():
-    return send_from_directory(app.template_folder, 'index.html')
+@app.route('/api/posts/search', methods=['GET'])
+def search_posts():
+    title = request.args.get('title', '').lower()
+    content = request.args.get('content', '').lower()
+
+    filtered_posts = [
+        post for post in POSTS
+        if (title and title in post['title'].lower())
+        or (content and content in post['content'].lower())
+    ]
+
+    return jsonify(filtered_posts)
 
 
 if __name__ == '__main__':

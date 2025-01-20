@@ -74,7 +74,25 @@ body {
     color: #333;
 }
 
-.post button {
+/* Style for Update Button */
+.post .update-button {
+    position: absolute;
+    top: 10px;
+    right: 80px; /* Adjust position to avoid overlap */
+    background-color: #44cc44;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.post .update-button:hover {
+    background-color: #33bb33;
+}
+
+/* Style for Delete Button */
+.post .delete-button {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -86,6 +104,6 @@ body {
     cursor: pointer;
 }
 
-.post button:hover {
+.post .delete-button:hover {
     background-color: #cc0000;
 }
